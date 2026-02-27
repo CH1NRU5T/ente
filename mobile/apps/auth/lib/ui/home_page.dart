@@ -1019,6 +1019,24 @@ class _HomePageState extends State<HomePage> {
       _pressedKeys.remove(event.logicalKey);
     }
 
+    // Cmd/Ctrl+W must always close the window, regardless of UI state.
+    if (event is KeyDownEvent &&
+        event.logicalKey == LogicalKeyboardKey.keyW &&
+        PlatformDetector.isDesktop()) {
+      final pressed = HardwareKeyboard.instance.logicalKeysPressed;
+      final bool isMetaKeyPressed = Platform.isMacOS || Platform.isIOS
+          ? (pressed.contains(LogicalKeyboardKey.metaLeft) ||
+              pressed.contains(LogicalKeyboardKey.meta) ||
+              pressed.contains(LogicalKeyboardKey.metaRight))
+          : (pressed.contains(LogicalKeyboardKey.controlLeft) ||
+              pressed.contains(LogicalKeyboardKey.control) ||
+              pressed.contains(LogicalKeyboardKey.controlRight));
+      if (isMetaKeyPressed) {
+        windowManager.close();
+        return true;
+      }
+    }
+
     // This handler is registered globally via ServicesBinding, so make sure we
     // only act on shortcuts when HomePage is actually the active surface.
     final route = ModalRoute.of(context);
@@ -1057,13 +1075,6 @@ class _HomePageState extends State<HomePage> {
           pressed.contains(LogicalKeyboardKey.shiftLeft) ||
               pressed.contains(LogicalKeyboardKey.shiftRight) ||
               pressed.contains(LogicalKeyboardKey.shift);
-
-      if (isMetaKeyPressed && event.logicalKey == LogicalKeyboardKey.keyW) {
-        if (PlatformDetector.isDesktop()) {
-          windowManager.close();
-          return true;
-        }
-      }
 
       // '/' opens search. Don't trigger this on '?' (Shift + '/').
       if ((isMetaKeyPressed && event.logicalKey == LogicalKeyboardKey.keyF) ||
