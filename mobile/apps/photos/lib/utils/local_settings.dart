@@ -81,6 +81,8 @@ class LocalSettings {
   static const _kAutoMergeThresholdOverride = "ml_debug.auto_merge_threshold";
   static const _kDefaultClusteringDistanceOverride =
       "ml_debug.default_clustering_distance";
+  static const _kRunMLDuringInteractionOverride =
+      "ml_debug.run_ml_during_interaction";
   static const _kAppMode = "ls.app_mode";
   static const _kShowOfflineModeOption = "ls.show_offline_mode_option";
 
@@ -281,6 +283,13 @@ class LocalSettings {
     await _prefs.setDouble(_kDefaultClusteringDistanceOverride, value);
   }
 
+  bool get runMLDuringInteractionOverride =>
+      _prefs.getBool(_kRunMLDuringInteractionOverride) ?? false;
+
+  Future<void> setRunMLDuringInteractionOverride(bool value) async {
+    await _prefs.setBool(_kRunMLDuringInteractionOverride, value);
+  }
+
   Future<bool> setSmartMemories(bool value) async {
     await _prefs.setBool(kCuratedMemoriesEnabled, value);
     return value;
@@ -476,7 +485,7 @@ class LocalSettings {
   }
 
   bool get showOfflineModeOption =>
-      _prefs.getBool(_kShowOfflineModeOption) ?? false;
+      _prefs.getBool(_kShowOfflineModeOption) ?? true;
 
   Future<void> setShowOfflineModeOption(bool value) async {
     await _prefs.setBool(_kShowOfflineModeOption, value);
